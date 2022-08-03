@@ -6,6 +6,7 @@
 //Dependencies
 const http = require('http');
 const url = require('url');
+const StringDecoder = require('string_decoder').StringDecoder;
 
 
 
@@ -26,15 +27,33 @@ const server = http.createServer(function(req, res){
 
     let method = req.method.toLowerCase();
 
+    // Get the request header as object
 
-    // send the response
-    res.end('hello world\n');
+    let headers = req.headers;
 
-    // log the request 
-    console.log("the request recived on this path: "+ trimmedPath + "\n->request method :" + method + "\n and with this query string paramter:", queryStringObject);
+    // Get the payload if there is any
+
+    let decoder = new StringDecoder("utf-8");
+    let buffer = '';
+    req.on('data', function(data){
+        buffer += decoder.write(data);
+        
+    });
+
+    req.on('end', function(){
+        buffer += decoder.end();
+
+        //
+        // send the response
+        res.end('hello world\n');
+
+        // log the request 
+        //console.log("the request recived on this path: "+ trimmedPath + "\n->request method :" + method + "\n and with this query string paramter:", queryStringObject);
+        //console.log("this is the header request : ", headers);
+        console.log(" request recived with payload : ", buffer);
 
 
-
+    });
 });
 
 
