@@ -2,16 +2,44 @@
 *primary file for the api
 */
 
-
 //Dependencies
 const http = require('http');
+const https = require('https');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
+const config = require('./config');
+const fs = require('fs');
+
+// instantiate the HTTP server
+const httpServer = http.createServer(function(req, res){
+    unifiedServer(req,res);
+});
+
+//stat the HTTP Server, 
+httpServer.listen(config.httpPort, function(){
+    console.log("the server is listening on port: "+config.httpPort +"\t Env :" +config.envName+" mode.");
+});
+
+// instantiate the HTTPS server
+let httpsServerOptions = {
+    'key': fs.readFileSync('./https/key.pem'),
+    'cert': fs.readFileSync('./https/cert.pem'),
+};
+
+const httpsServer = https.createServer(httpsServerOptions, function(req,res){
+    unifiedServer(req,res);
+});
+
+//stat the HTTPS Server, 
+httpsServer.listen(config.httpsPort, function(){
+    console.log("the server is listening on port: "+config.httpsPort +"\t Env :" +config.envName+" mode.");
+});
 
 
 
-// the server should respons to all requests with a string
-const server = http.createServer(function(req, res){
+// All server logic for both http and https servers
+
+let unifiedServer = function(req,res){
     
     // get the url and parse it
     let parsedUrl = url.parse(req.url,true);
@@ -67,20 +95,15 @@ const server = http.createServer(function(req, res){
             let payloadString = JSON.stringify(payload);
 
             // return the response
-
+            res.setHeader('Content-Type','application/json');
             res.writeHead(statusCode);
             res.end(payloadString);
 
             console.log(" returning this response : ", statusCode, payloadString );
         });
     });
-});
+};
 
-//stat the Server, and have it listen on port 3000
-
-server.listen(3000, function(){
-    console.log("the server is listening on port 3000");
-});
 
 // define the handlers
 
