@@ -111,17 +111,10 @@ let handlers = {};
 
 // sample handler
 
-handlers.sample = function(data, callback){
+handlers.ping = function(data, callback){
     //callback a http status code , end a payload object
-    callback(406, {'name': 'sample handler'});
+    callback(200);
 };
-
-//my test to check the logique
-handlers.tickets = function(data, callback){
-    //callback a http status code , end a payload object
-    callback(407, {'name': 'tickets handler'});
-};
-
 
 // define the not found handler
 
@@ -133,6 +126,5 @@ handlers.notfound = function(data, callback){
 // define request handler
 
 let router = {
-    'sample' : handlers.sample,
-    'tickets' : handlers.tickets
+    'ping' : handlers.ping
 };
